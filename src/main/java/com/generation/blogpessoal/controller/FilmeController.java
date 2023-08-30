@@ -3,16 +3,20 @@ package com.generation.blogpessoal.controller;
 import com.generation.blogpessoal.converter.FilmeConverter;
 import com.generation.blogpessoal.dto.FilmeDTO;
 import com.generation.blogpessoal.model.Filme;
+import com.generation.blogpessoal.model.Postagem;
 import com.generation.blogpessoal.repository.FilmeRepository;
 import com.generation.blogpessoal.service.FilmeService;
 import com.generation.blogpessoal.vo.FilmeOMDB;
 import com.generation.blogpessoal.vo.FilmeVO;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn;
@@ -55,6 +59,17 @@ public class FilmeController {
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        Optional<Filme> filme = filmeRepository.findById(id);
+
+        if(filme.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        filmeRepository.deleteById(id);
     }
 
     @PostMapping
